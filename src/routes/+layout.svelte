@@ -1,28 +1,36 @@
 <script>
 	import Header from './Header.svelte';
 	import './styles.css';
+	import github from '$lib/images/github.svg';
+	import Background from './Background.svelte';
 </script>
+
+<Background/>
 
 <div class="app">
 	<Header />
 
+	<div class="corner">
+		<a href="https://github.com/QAEZZ/stonkapp">
+			<img src={github} alt="GitHub" />
+		</a>
+	</div>
+
 	<main>
 		<slot />
 	</main>
-
-	<footer>
-		<p>visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to learn SvelteKit</p>
-	</footer>
 </div>
 
 <style>
 	.app {
+		z-index: 2 !important;
 		display: flex;
 		flex-direction: column;
 		min-height: 100vh;
 	}
 
 	main {
+		z-index: 2 !important;
 		flex: 1;
 		display: flex;
 		flex-direction: column;
@@ -33,21 +41,26 @@
 		box-sizing: border-box;
 	}
 
-	footer {
+	.corner {
+		position: fixed;
+		top: 0;
+		right: 0;
+		width: 3em;
+		height: 3em;
+	}
+
+	.corner a {
 		display: flex;
-		flex-direction: column;
-		justify-content: center;
 		align-items: center;
-		padding: 12px;
+		justify-content: center;
+		width: 100%;
+		height: 100%;
 	}
 
-	footer a {
-		font-weight: bold;
-	}
-
-	@media (min-width: 480px) {
-		footer {
-			padding: 12px 0;
-		}
+	.corner img {
+		width: 2em;
+		height: 2em;
+		object-fit: contain;
+		filteR: invert(1);
 	}
 </style>
