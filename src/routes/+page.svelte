@@ -9,7 +9,7 @@
 
 <section>
 	<h1>Text</h1>
-	<StockInfo />
+	<StockInfo ticker="NFLX" />
 </section>
 
 <style>

@@ -1,6 +1,4 @@
 // @ts-nocheck
-import axios from 'axios';
-import fs from 'fs';
 import { json } from '@sveltejs/kit';
 import { FINNHUB_API_KEY } from '$lib/secrets/finnhub';
 
@@ -18,11 +16,22 @@ export async function GET({ url }) {
     let stock_res = await fetch(`https://finnhub.io/api/v1/stock/metric?symbol=${q.toUpperCase()}&token=${FINNHUB_API_KEY}`);
     let stock_data = JSON.parse(await stock_res.text());
 
+    let exchange = profile_data.exchange.split('-')[0].trim()
+    switch (exchange.toUpperCase()) {
+        case "NEW YORK STOCK EXCHANGE, INC.":
+            exchange = "NYSE"; break;
+        case "LONDON STOCK EXCHANGE":
+            exchange = "LSE"; break;
+        default:
+            exchange = exchange;
+            break;
+    }
+
     return json({
         name: profile_data.name,
         ticker: q.toUpperCase(),
         country: profile_data.country,
-        exchange: profile_data.exchange.split('-')[0].trim(),
+        exchange: exchange,
         logo: profile_data.logo,
         web_url: profile_data.weburl,
         price: {

@@ -1,5 +1,3 @@
-import axios from 'axios';
-import fs from 'fs';
 import { json } from '@sveltejs/kit';
 import { FINNHUB_API_KEY } from '$lib/secrets/finnhub';
 
