@@ -1,6 +1,5 @@
 <script>
-// @ts-nocheck
-
+	// @ts-nocheck
 
 	import StockInfo from './StockInfo.svelte';
 	import { onMount } from 'svelte';
@@ -21,6 +20,9 @@
 	];
 
 	$: currentTicker = tickers[0];
+	$: if (currentTicker === '') {
+		currentTicker = 'AAPL';
+	}
 	$: console.log('New Ticker: ', currentTicker);
 
 	/**
@@ -77,20 +79,12 @@
 		// @ts-ignore
 		setPlaceholder(ticker, '');
 		await setTicker(`$${currentTicker}`, 200, 0);
-
-		// ticker.addEventListener('keydown', (e) => {
-		// 	console.log('keydown');
-		// 	if (e.key === 'enter' || e.keyCode === 13) {
-		// 		currentTicker = ticker.value.replace('$', '').trim().toUpperCase();
-		// 		console.log(currentTicker);
-		// 	}
-		// });
-
-		function updateStockInfo() {
-			currentTicker = ticker.value.replace('$', '').trim().toUpperCase();
-			console.log("Ticker change: ", currentTicker);
-		}
 	});
+
+	function updateStockInfo(event) {
+		currentTicker = event.target.value.replace('$', '').trim().toUpperCase();
+		event.target.value = '';
+	}
 </script>
 
 <svelte:head>
@@ -100,10 +94,17 @@
 
 <div id="content">
 	<div class="ticker-searchbar">
-		<input type="text" placeholder="$AAPL" id="js-ticker" maxlength="4" on:change={(e) => currentTicker = e.target.value.replace('$', '').trim().toUpperCase()}/>
-		<!-- <input type="text" placeholder="$AAPL" id="js-ticker" maxlength="4" bind:value={currentTicker}/> -->
+		<input
+			type="text"
+			placeholder="$AAPL"
+			id="js-ticker"
+			maxlength="4"
+			on:change={(e) => updateStockInfo(e)}
+		/>
 	</div>
-	<StockInfo ticker={currentTicker} />
+	{#key currentTicker}
+		<StockInfo ticker={currentTicker} />
+	{/key}
 </div>
 
 <style>
@@ -138,6 +139,6 @@
 		color: var(--color-text);
 	}
 	.ticker-searchbar input[type='text']::before {
-		content: "$";
+		content: '$';
 	}
 </style>

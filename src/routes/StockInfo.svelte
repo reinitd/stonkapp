@@ -37,12 +37,14 @@
 		}
 	};
 
+	let points = [];
+
 	onMount(async () => {
 		async function getTickerInfo(ticker) {
 			// TO-DO: ADD ERROR HANDLING!!!
 
 			let info_res = await fetch(`/api/tickerinfo?q=${ticker}`);
-			let info_data = JSON.parse(await info_res.text()); // Update info_data
+			let info_data = JSON.parse(await info_res.text());
 			// switch to websockets to get realtime price data
 
 			let recommendation_res = await fetch(`/api/stockrecommendation?q=${ticker}`);
@@ -99,9 +101,38 @@
 					}
 				}
 			};
+
+			points = [
+				{ recommendation: 'Strong Sell', percentage: data.recommendations.percentages.strong_sell },
+				{ recommendation: 'Sell', percentage: data.recommendations.percentages.sell },
+				{ recommendation: 'Hold', percentage: data.recommendations.percentages.hold },
+				{ recommendation: 'Buy', percentage: data.recommendations.percentages.buy },
+				{ recommendation: 'Strong Buy', percentage: data.recommendations.percentages.strong_buy }
+			];
 		}
 		await getTickerInfo(ticker);
 	});
+
+	let width = 450;
+	let height = 100;
+
+	const xTicks = ['Strong Sell', 'Sell', 'Hold', 'Buy', 'Strong Buy'];
+	const yTicks = [0, 50];
+	const padding = { top: 0, right: 0, bottom: 20, left: 55 };
+
+	function formatMobile(tick) {
+		return "'" + tick.toString().slice(-2);
+	}
+
+	$: xScale = scaleLinear()
+		.domain([0, xTicks.length])
+		.range([padding.left, width - padding.right]);
+
+	$: yScale = scaleLinear()
+		.domain([0, Math.max.apply(null, yTicks)])
+		.range([height - padding.bottom, padding.top]);
+
+	$: barWidth = 15;
 </script>
 
 <div class="stock-container">
@@ -113,10 +144,7 @@
 				<p>{data.exchange}</p>
 			</span>
 		</span>
-		<div
-			class="logo"
-			style="background-image: url('{data.logo}')"
-		></div>
+		<div class="logo" style="background-image: url('{data.logo}')"></div>
 	</div>
 	<div class="stock-details">
 		<div class="money">
@@ -130,14 +158,14 @@
 					</span>
 				</span>
 			{:else if data.price.day_change == 0}
-			<span class="current">
-				<h2>{data.price.current}</h2>
-				<span>
-					<Fa icon={faCaretDown} fw />
-					<p>{data.price.day_change}</p>
-					<p>{data.price.day_change_percent}%</p>
+				<span class="current">
+					<h2>{data.price.current}</h2>
+					<span>
+						<Fa icon={faCaretDown} fw />
+						<p>{data.price.day_change}</p>
+						<p>{data.price.day_change_percent}%</p>
+					</span>
 				</span>
-			</span>
 			{:else}
 				<span class="current is-positive">
 					<h2>{data.price.current}</h2>
@@ -168,10 +196,30 @@
 		</div>
 		<div class="recommendations">
 			<h4 data-period={data.recommendations.period}>Recommendations</h4>
+			<svg>
+				<!-- x axis -->
+				<g class="axis x-axis">
+					{#each points as point, i}
+						<g class="tick" transform="translate({xScale(i)},{height})">
+							<text x={barWidth / 2} y="-4"
+								>{width > 380 ? point.recommendation : formatMobile(point.recommendation)}</text
+							>
+						</g>
+					{/each}
+				</g>
 
-			<p style="color: rgba(170, 170, 170, .5); line-height: 0; margin: 0; padding: 0;">
-				*vertical bar graph here*
-			</p>
+				<g class="bars">
+					{#each points as point, i}
+						<rect
+							data-recommendation={point.recommendation}
+							x={xScale(i) + 2}
+							y={yScale(point.percentage)}
+							width={barWidth - 4}
+							height={yScale(0) - yScale(point.percentage)}
+						/>
+					{/each}
+				</g>
+			</svg>
 		</div>
 	</div>
 </div>
@@ -305,16 +353,10 @@
 
 	/* d3 chart */
 
-	.chart {
-		width: 100%;
-		max-width: 500px;
-		margin: 0 auto;
-	}
-
 	svg {
-		position: relative;
+		/* position: relative; */
 		width: 100%;
-		height: 200px;
+		height: auto;
 	}
 
 	.tick {
@@ -323,18 +365,9 @@
 		font-weight: 200;
 	}
 
-	.tick line {
-		stroke: #e2e2e2;
-		stroke-dasharray: 2;
-	}
-
 	.tick text {
 		fill: #ccc;
 		text-anchor: start;
-	}
-
-	.tick.tick-0 line {
-		stroke-dasharray: 0;
 	}
 
 	.x-axis .tick text {
@@ -342,8 +375,28 @@
 	}
 
 	.bars rect {
-		fill: #a11;
+		fill: white;
 		stroke: none;
 		opacity: 0.65;
+	}
+
+	.bars rect[data-recommendation="Buy"] {
+		fill: rgb(100, 250, 100) !important;
+	}
+
+	.bars rect[data-recommendation="Strong Buy"] {
+		fill: rgb(100, 250, 250) !important;
+	}
+
+	.bars rect[data-recommendation="Hold"] {
+		fill: rgb(250, 250, 100) !important;
+	}
+
+	.bars rect[data-recommendation="Sell"] {
+		fill: rgb(250, 150, 100) !important;
+	}
+
+	.bars rect[data-recommendation="Strong Sell"] {
+		fill: rgb(250, 100, 100) !important;
 	}
 </style>
