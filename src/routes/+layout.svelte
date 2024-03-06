@@ -1,5 +1,4 @@
 <script>
-	import Header from './Header.svelte';
 	import './styles.css';
 	import github from '$lib/images/github.svg';
 	import Background from './Background.svelte';
@@ -8,7 +7,6 @@
 <Background/>
 
 <div class="app">
-	<Header />
 
 	<div class="corner">
 		<a href="https://github.com/QAEZZ/stonkapp">

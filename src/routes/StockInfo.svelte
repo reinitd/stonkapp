@@ -7,7 +7,7 @@
 	import Fa from 'svelte-fa';
 	import { faCaretDown, faCaretUp } from '@fortawesome/free-solid-svg-icons';
 
-	export let ticker;
+	export let ticker = 'AAPL';
 	let data = {
 		name: 'Stock',
 		ticker: 'STCK',
@@ -182,7 +182,7 @@
 		flex-direction: column;
 		background-color: var(--color-element-background);
 		border: 1px solid var(--color-border);
-		border-radius: 7px;
+		border-radius: 3px 3px 7px 7px;
 		padding: 10px;
 		min-width: 450px;
 	}
