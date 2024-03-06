@@ -25,7 +25,7 @@
 			previous_close: 0
 		},
 		recommendations: {
-			period: '(MM/DD/YYYY)',
+			period: '(YYYY-MM-DD)',
 			total: 0,
 			percentages: {
 				buy: 0,
@@ -114,18 +114,18 @@
 	});
 
 	let width = 450;
-	let height = 100;
+	let height = 90;
 
 	const xTicks = ['Strong Sell', 'Sell', 'Hold', 'Buy', 'Strong Buy'];
 	const yTicks = [0, 50];
-	const padding = { top: 0, right: 0, bottom: 20, left: 55 };
+	const padding = { top: 0, right: 5, bottom: 20, left: 5 };
 
 	function formatMobile(tick) {
 		return "'" + tick.toString().slice(-2);
 	}
 
 	$: xScale = scaleLinear()
-		.domain([0, xTicks.length])
+		.domain([-1, xTicks.length])
 		.range([padding.left, width - padding.right]);
 
 	$: yScale = scaleLinear()
@@ -196,6 +196,31 @@
 		</div>
 		<div class="recommendations">
 			<h4 data-period={data.recommendations.period}>Recommendations</h4>
+			<!-- <svg>
+				x axis
+				<g class="axis x-axis">
+					{#each points as point, i}
+						<g class="tick" transform="translate({xScale(i)},{height})">
+							<text x="0" y="-4">{width > 380 ? point.recommendation : formatMobile(point.recommendation)}</text>
+						</g>
+					{/each}
+				</g>
+			
+				<g class="bars">
+					{#each points as point, i}
+						<rect
+							data-recommendation={point.recommendation}
+							x={xScale(i) + 2}
+							y={yScale(point.percentage)}
+							rx={barWidth / 2}
+							width={barWidth - 4}
+							height={yScale(0) - yScale(point.percentage)}
+						/>
+					{/each}
+				</g>
+			</svg> -->
+			
+
 			<svg>
 				<!-- x axis -->
 				<g class="axis x-axis">
@@ -214,6 +239,7 @@
 							data-recommendation={point.recommendation}
 							x={xScale(i) + 2}
 							y={yScale(point.percentage)}
+							rx={barWidth / 2}
 							width={barWidth - 4}
 							height={yScale(0) - yScale(point.percentage)}
 						/>
@@ -343,6 +369,11 @@
 		font-size: 0.9em;
 	}
 
+	.stock-container .stock-details .recommendations {
+		padding: 0;
+		margin: 0;
+	}
+
 	.stock-container .stock-details .recommendations h4::after {
 		content: attr(data-period);
 		color: rgba(230, 230, 230, 0.5);
@@ -380,23 +411,23 @@
 		opacity: 0.65;
 	}
 
-	.bars rect[data-recommendation="Buy"] {
-		fill: rgb(100, 250, 100) !important;
+	.bars rect[data-recommendation='Buy'] {
+		fill: rgb(100, 250, 100);
 	}
 
-	.bars rect[data-recommendation="Strong Buy"] {
-		fill: rgb(100, 250, 250) !important;
+	.bars rect[data-recommendation='Strong Buy'] {
+		fill: rgb(100, 250, 250);
 	}
 
-	.bars rect[data-recommendation="Hold"] {
-		fill: rgb(250, 250, 100) !important;
+	.bars rect[data-recommendation='Hold'] {
+		fill: rgb(250, 250, 100);
 	}
 
-	.bars rect[data-recommendation="Sell"] {
-		fill: rgb(250, 150, 100) !important;
+	.bars rect[data-recommendation='Sell'] {
+		fill: rgb(250, 150, 100);
 	}
 
-	.bars rect[data-recommendation="Strong Sell"] {
-		fill: rgb(250, 100, 100) !important;
+	.bars rect[data-recommendation='Strong Sell'] {
+		fill: rgb(250, 100, 100);
 	}
 </style>
