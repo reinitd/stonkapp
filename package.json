@@ -33,6 +33,8 @@
 		"@fortawesome/free-brands-svg-icons": "^6.5.1",
 		"@fortawesome/free-solid-svg-icons": "^6.5.1",
 		"@types/d3": "^7.4.3",
+		"@unovis/svelte": "^1.3.5",
+		"@unovis/ts": "^1.3.5",
 		"axios": "^1.6.7",
 		"d3": "^7.8.5",
 		"svelte-fa": "^4.0.2"

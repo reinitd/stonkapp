@@ -71,8 +71,6 @@
 				}
 			};
 
-			/* TO-DO: use scaleLinear to make a chart of recommendations */
-
 			data = {
 				name: info_data.name,
 				ticker: info_data.ticker,
@@ -113,26 +111,32 @@
 		await getTickerInfo(ticker);
 	});
 
-	let width = 450;
-	let height = 90;
+	import { VisXYContainer, VisStackedBar } from '@unovis/svelte';
 
-	const xTicks = ['Strong Sell', 'Sell', 'Hold', 'Buy', 'Strong Buy'];
-	const yTicks = [0, 50];
-	const padding = { top: 0, right: 5, bottom: 20, left: 5 };
+	$: x = (d) => d.x;
+	$: y = ['Strong Sell', 'Sell', 'Hold', 'Buy', 'Strong Buy'];
+	// $: y = (d) => d.y;
 
-	function formatMobile(tick) {
-		return "'" + tick.toString().slice(-2);
-	}
+	// let width = 450;
+	// let height = 90;
 
-	$: xScale = scaleLinear()
-		.domain([-1, xTicks.length])
-		.range([padding.left, width - padding.right]);
+	// const xTicks = ['Strong Sell', 'Sell', 'Hold', 'Buy', 'Strong Buy'];
+	// const yTicks = [0, 50];
+	// const padding = { top: 0, right: 5, bottom: 20, left: 5 };
 
-	$: yScale = scaleLinear()
-		.domain([0, Math.max.apply(null, yTicks)])
-		.range([height - padding.bottom, padding.top]);
+	// function formatMobile(tick) {
+	// 	return "'" + tick.toString().slice(-2);
+	// }
 
-	$: barWidth = 15;
+	// $: xScale = scaleLinear()
+	// 	.domain([-1, xTicks.length])
+	// 	.range([padding.left, width - padding.right]);
+
+	// $: yScale = scaleLinear()
+	// 	.domain([0, Math.max.apply(null, yTicks)])
+	// 	.range([height - padding.bottom, padding.top]);
+
+	// $: barWidth = 15;
 </script>
 
 <div class="stock-container">
@@ -196,56 +200,22 @@
 		</div>
 		<div class="recommendations">
 			<h4 data-period={data.recommendations.period}>Recommendations</h4>
-			<!-- <svg>
-				x axis
-				<g class="axis x-axis">
-					{#each points as point, i}
-						<g class="tick" transform="translate({xScale(i)},{height})">
-							<text x="0" y="-4">{width > 380 ? point.recommendation : formatMobile(point.recommendation)}</text>
-						</g>
-					{/each}
-				</g>
-			
-				<g class="bars">
-					{#each points as point, i}
-						<rect
-							data-recommendation={point.recommendation}
-							x={xScale(i) + 2}
-							y={yScale(point.percentage)}
-							rx={barWidth / 2}
-							width={barWidth - 4}
-							height={yScale(0) - yScale(point.percentage)}
-						/>
-					{/each}
-				</g>
-			</svg> -->
-			
 
-			<svg>
-				<!-- x axis -->
-				<g class="axis x-axis">
-					{#each points as point, i}
-						<g class="tick" transform="translate({xScale(i)},{height})">
-							<text x={barWidth / 2} y="-4"
-								>{width > 380 ? point.recommendation : formatMobile(point.recommendation)}</text
-							>
-						</g>
-					{/each}
-				</g>
-
-				<g class="bars">
-					{#each points as point, i}
-						<rect
+			<div class="chart">
+				{#each points as point, i}
+					<div class="bar-container">
+						<span class="label" style="opacity: .7;">
+							{point.percentage}
+						</span>
+						<div
+							class="bar"
 							data-recommendation={point.recommendation}
-							x={xScale(i) + 2}
-							y={yScale(point.percentage)}
-							rx={barWidth / 2}
-							width={barWidth - 4}
-							height={yScale(0) - yScale(point.percentage)}
-						/>
-					{/each}
-				</g>
-			</svg>
+							style="height: {point.percentage}px"
+						></div>
+						<span class="label">{point.recommendation}</span>
+					</div>
+				{/each}
+			</div>
 		</div>
 	</div>
 </div>
@@ -374,6 +344,11 @@
 		margin: 0;
 	}
 
+	.stock-container .stock-details .recommendations h4 {
+		margin: -5px 0 0 0;
+		padding: 0;
+	}
+
 	.stock-container .stock-details .recommendations h4::after {
 		content: attr(data-period);
 		color: rgba(230, 230, 230, 0.5);
@@ -382,52 +357,57 @@
 		font-size: 0.75em;
 	}
 
-	/* d3 chart */
+	/* Recommendations Chart */
 
-	svg {
-		/* position: relative; */
-		width: 100%;
-		height: auto;
+	.chart {
+		height: 75px;
+		display: flex;
+		justify-content: space-evenly;
 	}
 
-	.tick {
-		font-family: Helvetica, Arial;
-		font-size: 0.725em;
-		font-weight: 200;
+	.bar-container {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: end;
+		margin-right: 2%;
 	}
 
-	.tick text {
-		fill: #ccc;
-		text-anchor: start;
-	}
-
-	.x-axis .tick text {
-		text-anchor: middle;
-	}
-
-	.bars rect {
-		fill: white;
-		stroke: none;
+	.bar {
+		background-color: steelblue;
+		border-radius: 100px;
+		width: 15px;
 		opacity: 0.65;
 	}
 
-	.bars rect[data-recommendation='Buy'] {
-		fill: rgb(100, 250, 100);
+	.bar[data-recommendation='Buy'] {
+		background-color: rgb(100, 250, 100);
 	}
 
-	.bars rect[data-recommendation='Strong Buy'] {
-		fill: rgb(100, 250, 250);
+	.bar[data-recommendation='Strong Buy'] {
+		background-color: rgb(100, 250, 250);
 	}
 
-	.bars rect[data-recommendation='Hold'] {
-		fill: rgb(250, 250, 100);
+	.bar[data-recommendation='Hold'] {
+		background-color: rgb(250, 250, 100);
 	}
 
-	.bars rect[data-recommendation='Sell'] {
-		fill: rgb(250, 150, 100);
+	.bar[data-recommendation='Sell'] {
+		background-color: rgb(250, 150, 100);
 	}
 
-	.bars rect[data-recommendation='Strong Sell'] {
-		fill: rgb(250, 100, 100);
+	.bar[data-recommendation='Strong Sell'] {
+		background-color: rgb(250, 100, 100);
+	}
+
+	.label {
+		color: var(--color-text);
+		font-size: .75em;
+		margin-top: 5px;
+	}
+
+	/* Ensure the last bar container doesn't have a margin */
+	.chart .bar-container:last-child {
+		margin-right: 0;
 	}
 </style>
