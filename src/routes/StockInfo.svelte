@@ -2,7 +2,6 @@
 	// @ts-nocheck
 	import './styles.css';
 	import { onMount } from 'svelte';
-	import { scaleLinear } from 'd3';
 
 	import Fa from 'svelte-fa';
 	import { faCaretDown, faCaretUp } from '@fortawesome/free-solid-svg-icons';
