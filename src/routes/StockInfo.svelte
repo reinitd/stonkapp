@@ -41,10 +41,12 @@
 	onMount(async () => {
 		async function getTickerInfo(ticker) {
 			// TO-DO: ADD ERROR HANDLING!!!
+			// haha, no.... (too lazy)
 
 			let info_res = await fetch(`/api/tickerinfo?q=${ticker}`);
 			let info_data = JSON.parse(await info_res.text());
 			// switch to websockets to get realtime price data
+			// haha, no... (too lazy)
 
 			let recommendation_res = await fetch(`/api/stockrecommendation?q=${ticker}`);
 			let recommendation_data = JSON.parse(await recommendation_res.text());
@@ -110,32 +112,9 @@
 		await getTickerInfo(ticker);
 	});
 
-	import { VisXYContainer, VisStackedBar } from '@unovis/svelte';
 
 	$: x = (d) => d.x;
 	$: y = ['Strong Sell', 'Sell', 'Hold', 'Buy', 'Strong Buy'];
-	// $: y = (d) => d.y;
-
-	// let width = 450;
-	// let height = 90;
-
-	// const xTicks = ['Strong Sell', 'Sell', 'Hold', 'Buy', 'Strong Buy'];
-	// const yTicks = [0, 50];
-	// const padding = { top: 0, right: 5, bottom: 20, left: 5 };
-
-	// function formatMobile(tick) {
-	// 	return "'" + tick.toString().slice(-2);
-	// }
-
-	// $: xScale = scaleLinear()
-	// 	.domain([-1, xTicks.length])
-	// 	.range([padding.left, width - padding.right]);
-
-	// $: yScale = scaleLinear()
-	// 	.domain([0, Math.max.apply(null, yTicks)])
-	// 	.range([height - padding.bottom, padding.top]);
-
-	// $: barWidth = 15;
 </script>
 
 <div class="stock-container">
